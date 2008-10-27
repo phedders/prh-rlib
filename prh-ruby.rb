@@ -85,3 +85,6 @@ class SerializableProc
   end
 end
 
+def debug(level,string)
+  puts string if level > $debug
+end
