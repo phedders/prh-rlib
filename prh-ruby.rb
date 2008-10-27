@@ -16,12 +16,15 @@ class Net::SSH::Connection::Session
     @r={}
     c=self.open_channel do |ch|
       ch.exec(cmd) do |ch,st|
-        @r[:st] = st
+        @r[:start] = st
+        @r[:out] = []
+        @r[:all] = []
+        @r[:err] = []
         raise "FAILED: couldn't execute command" unless st
-        ch.on_data {|ch,data| @r[:out]=data}
-        ch.on_extended_data {|ch,type,data| @r[:err] = data if type == 1}
-        ch.on_request("exit-status") {|ch,data| @r[:exit] = data.read_long }
-        ch.on_request("exit-signal") {|ch,data| @r[:sig] = data.read_long }
+        ch.on_data {|ch,data| @r[:out] << data; @r[:all] << data}
+        ch.on_extended_data {|ch,type,data| if type == 1; @r[:err] << data; @r[:all] << data; end}
+        ch.on_request("exit-status") {|ch,data| @r[:status] = data.read_long }
+        ch.on_request("exit-signal") {|ch,data| @r[:signal] = data.read_long }
       end
     end
     c.wait
