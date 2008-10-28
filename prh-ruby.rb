@@ -85,6 +85,14 @@ class SerializableProc
   end
 end
 
-def debug(level,string)
-  puts string if level > $debug
+def debug(level,*objects)
+  return if level > $debug
+  objects.each do |o|
+    if o.class == String
+      puts o
+    else
+      pp o
+    end
+  end
+  return nil
 end
