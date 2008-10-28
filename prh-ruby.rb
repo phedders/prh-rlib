@@ -3,6 +3,8 @@
 %w(
   rubygems
   net/ssh
+  pp
+  git
 ).each {|r| require r}
 
 #This are some simple extensions to Net::SSH 
@@ -96,3 +98,34 @@ def debug(level,*objects)
   end
   return nil
 end
+
+class Git::Base
+  def get_branch(branch,*opts)
+    debug 6, "get_branch #{branch} opts=#{opts}"
+    local=self.branches.local.map{|l| l.full}.grep(Regexp.new("^#{branch}$"))
+    remote=self.branches.remote.map{|l| l.full}.grep(Regexp.new("^origin/#{branch}$"))
+    if local.any? and remote.any?
+      debug 7, "just checkout and update"
+      self.config("remote.#{branch}.remote", "origin")
+      self.config("remote.#{branch}.merge", "refs/heads/#{branch}")
+      self.checkout(branch)
+      self.pull
+    elsif local.any?
+      debug 7, "get local and push"
+      self.push("origin",branch)
+    elsif remote.any?
+      debug 7, "get remote"
+      self.config("remote.#{branch}.remote", "origin")
+      self.config("remote.#{branch}.merge", "refs/heads/#{branch}")
+      self.checkout("origin/#{branch}", :new_branch => branch)
+      self.pull("origin")
+    else
+      debug 7, "new branch"
+      self.checkout("zero",:new_branch => branch)
+      self.config("remote.#{branch}.remote", "origin")
+      self.config("remote.#{branch}.merge", "refs/heads/#{branch}")
+      self.push("origin")
+    end
+  end
+end
+
