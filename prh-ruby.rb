@@ -14,16 +14,27 @@ class Net::SSH::Connection::Session
   # :err == standard error (if there is any)
   # :exit == the exist status of the command
   # :sig == the signal the caused the command to stop (if any)
-  def execplus!(cmd)
+  def execplus!(cmd,supass=nil)
+    @supass=supass
+    cmd="su - -c \"#{cmd}\"" if @supass
     @r={}
     c=self.open_channel do |ch|
+    ch.request_pty do |ch, success| raise "Could not obtain pty (i.e. an interactive ssh session)" if !success; end
       ch.exec(cmd) do |ch,st|
         @r[:start] = st
         @r[:out] = []
         @r[:all] = []
         @r[:err] = []
         raise "FAILED: couldn't execute command" unless st
-        ch.on_data {|ch,data| @r[:out] << data; @r[:all] << data}
+        ch.on_data do |ch,data|
+          if data.match(/^Password:/)
+            ch.send_data(@supass.to_s+"\n")
+          else
+            @r[:out] << data
+            @r[:all] << data
+            yield(ch,data) if block_given?
+          end
+        end
         ch.on_extended_data {|ch,type,data| if type == 1; @r[:err] << data; @r[:all] << data; end}
         ch.on_request("exit-status") {|ch,data| @r[:status] = data.read_long }
         ch.on_request("exit-signal") {|ch,data| @r[:signal] = data.read_long }
@@ -129,3 +140,6 @@ class Git::Base
   end
 end
 
+def eon?(obj)
+  not defined? obj or obj.nil? or obj.empty?
+end
