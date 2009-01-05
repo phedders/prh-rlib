@@ -1,3 +1,5 @@
+require "grit"
+
 class Grit::Tree
   def files(recurse = false)
     o=[]
