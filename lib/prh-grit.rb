@@ -58,4 +58,10 @@ class Grit::Repo
   def get_head(name)
     self.commits(name).first
   end
+
+  # Very lazy way to get the data for a file in a specific branch
+
+  def data(file,branch = 'master')
+    self.get_head(branch).tree./(file).data if self.get_head(branch).tree/(file) if self.get_head(branch)
+  end
 end
