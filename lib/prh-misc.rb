@@ -73,4 +73,8 @@ def debug(level,*objects)
   return nil
 end
 
+# Pinched from Ruby Extensions Enumerable
+def mapf(message)
+  self.map { |elt| elt.send(message) }
+end
 
