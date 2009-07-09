@@ -25,7 +25,9 @@ class TMail::Maildir
   def self.folders(path)
     Dir.new(path).each.select{|d| d.match(/../) and maildir?(File.join(path,d))}
   end
+end
 
+class TMail::MaildirPort
   def send
     Net::SMTP.start( 'localhost', 25 ) do |smtpclient|
       smtpclient.send_message(
