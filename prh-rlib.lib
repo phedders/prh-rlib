@@ -1,0 +1,2 @@
+require 'rubygems'
+%q(lib/lib/prh-misc.rb lib/prh-ssh.rb lib/tmpdir187.rb lib/prh-grit.rb lib/prh-ruby.rb lib/prh-ssl.rb).each{|g| require g}
