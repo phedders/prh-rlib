@@ -27,7 +27,7 @@ class TMail::Maildir
   end
 end
 
-class TMail::MaildirPort
+class TMail::Mail
   def send
     Net::SMTP.start( 'localhost', 25 ) do |smtpclient|
       smtpclient.send_message(
