@@ -1,3 +1,5 @@
+require 'net/smtp'
+
 class TMail::Maildir
   def self.maildir?(path)
     return false unless File.directory?(path)
@@ -23,6 +25,14 @@ class TMail::Maildir
   def self.folders(path)
     Dir.new(path).each.select{|d| d.match(/../) and maildir?(File.join(path,d))}
   end
+
+  def send
+    Net::SMTP.start( 'localhost', 25 ) do |smtpclient|
+      smtpclient.send_message(
+        self.to_s, self.from, self.to
+      )
+    end
+  end
 end
 
 # And add detection for File#
@@ -31,4 +41,5 @@ class File
     TMail::Maildir.maildir? path
   end
 end
+
 
