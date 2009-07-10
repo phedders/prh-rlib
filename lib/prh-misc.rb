@@ -84,4 +84,4 @@ class Object
     self.methods.sort - self.class.superclass.methods
   end
 end
-'
+
