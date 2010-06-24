@@ -78,3 +78,10 @@ def mapf(message)
   self.map { |elt| elt.send(message) }
 end
 
+# I'm lazy...
+class Object
+  def umethods
+    self.methods.sort - self.class.superclass.methods
+  end
+end
+
