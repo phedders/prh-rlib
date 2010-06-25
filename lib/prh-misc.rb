@@ -3,8 +3,6 @@
 %w(
   net/ssh
   pp
-  git
-  mhash
 ).each {|r| require r}
 
 
