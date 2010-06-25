@@ -2,7 +2,7 @@
 
 %w(
   net/ssh
-  mhash
+  hashie
 ).each {|r| require r}
 
 #This are some simple extensions to Net::SSH 
@@ -15,7 +15,7 @@ class Net::SSH::Connection::Session
   def execplus!(cmd,supass=nil)
     @supass=supass
     cmd="su - -c \"#{cmd}\"" if @supass
-    @r=Mhash.new
+    @r=Hashie::Mash.new
     c=self.open_channel do |ch|
     ch.request_pty do |ch, success| raise "Could not obtain pty (i.e. an interactive ssh session)" if !success; end
       ch.exec(cmd) do |ch,st|
