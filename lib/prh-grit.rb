@@ -50,7 +50,10 @@ class Grit::Index
   #
   # Returns a String of the SHA1 of the commit
   def hcommit(message, branch = 'master')
-    self.commit(message, [self.repo.commits(branch).first],nil, nil, branch)
+    last_tree = self.repo.commits(branch).empty? ? nil : self.repo.commits(branch).first.tree
+    self.current_tree = last_tree if self.current_tree.nil?
+    #puts "HCOMMIT DEBUG 2\n#{self.current_tree.to_yaml}\n"
+    self.commit(message, [self.repo.commits(branch).first],nil, last_tree, branch)
   end
 end
 
