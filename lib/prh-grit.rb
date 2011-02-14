@@ -47,11 +47,13 @@ class Grit::Index
   # (Lazy) Commit the contents of the index to the head of the named branch
   #   +message+ is the commit message
   #   +branch+ is the named branch
+  #   +last_tree+ can be set to "no_last_tree" if the index has all the files that _should_ be committed
   #
   # Returns a String of the SHA1 of the commit
-  def hcommit(message, branch = 'master')
-    last_tree = self.repo.commits(branch).empty? ? nil : self.repo.commits(branch).first.tree
-    self.current_tree = last_tree if self.current_tree.nil?
+  def hcommit(message, branch = 'master', last_tree = self.repo.commits(branch).empty? ? nil : self.repo.commits(branch).first.tree)
+    #puts "lAST_TREE #{last_tree}"
+    self.current_tree = last_tree if self.current_tree.nil? and last_tree != "no_last_tree"
+    last_tree = nil if last_tree == "no_last_tree"
     #puts "HCOMMIT DEBUG 2\n#{self.current_tree.to_yaml}\n"
     self.commit(message, [self.repo.commits(branch).first],nil, last_tree, branch)
   end
