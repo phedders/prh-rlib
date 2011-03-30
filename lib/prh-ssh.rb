@@ -14,7 +14,7 @@ class Net::SSH::Connection::Session
   # :sig == the signal the caused the command to stop (if any)
   def execplus!(cmd,supass=nil)
     @supass=supass
-    cmd="su - -c \"#{cmd}\"" if @supass
+    cmd="su root -c \"#{cmd}\"" if @supass
     @r=Hashie::Mash.new
     c=self.open_channel do |ch|
     ch.request_pty do |ch, success| raise "Could not obtain pty (i.e. an interactive ssh session)" if !success; end
