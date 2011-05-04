@@ -55,7 +55,7 @@ class Grit::Index
     self.current_tree = last_tree if self.current_tree.nil? and last_tree != "no_last_tree"
     last_tree = nil if last_tree == "no_last_tree"
     #puts "HCOMMIT DEBUG 2\n#{self.current_tree.to_yaml}\n"
-    self.commit(message, [self.repo.commits(branch).first],nil, last_tree, branch)
+    self.commit(message, self.repo.commits(branch) == [] ? nil : [self.repo.commits(branch).first],nil, last_tree, branch)
   end
 end
 
